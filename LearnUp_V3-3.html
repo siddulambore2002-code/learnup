@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="theme-color" content="#365cff">
+<title>LearnUp V3 | Classes 6–10</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+button,select,input{font:inherit}
+button{cursor:pointer;border:0}
+header{background:#fff;padding:16px 18px 12px;position:sticky;top:0;z-index:10;border-bottom:1px solid #e7ebf2}
+.brand{font-size:25px;font-weight:800}.sub{color:#667085;font-size:12px;margin-top:3px}
+main{max-width:900px;margin:auto;padding:16px 15px 92px}
+.card{background:#fff;border-radius:18px;padding:17px;margin:11px 0;box-shadow:0 4px 18px #1720330d}
+h1,h2,h3{margin:0 0 10px}.muted{color:#667085}.small{font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.choice{padding:18px;border-radius:15px;background:#f8fafc;border:2px solid #e6eaf0;text-align:left}
+.choice.active{border-color:#365cff;background:#eef2ff}.choice b{display:block;font-size:17px}.choice span{font-size:12px;color:#667085}
+.subject{padding:15px;border-radius:15px;background:#fff;margin:9px 0;border:1px solid #e3e8f0;cursor:pointer}
+.subject b{font-size:17px}.pill{display:inline-block;background:#eef2ff;color:#365cff;padding:5px 9px;border-radius:99px;font-size:11px;margin-top:6px}
+.chapter{padding:15px;border:1px solid #e7ebf2;border-radius:14px;margin:9px 0;background:#fff}
+.chapter button,.primary,.secondary{padding:10px 13px;border-radius:10px;font-weight:700;margin:5px 4px 0 0}
+.primary{background:#365cff;color:#fff}.secondary{background:#eef2ff;color:#365cff}
+.video-button{background:#e60000!important;color:#fff!important}
+.green{background:#eafaf1;color:#087443}.download{background:#0b7a4b;color:#fff}
+input{width:100%;padding:13px;border:1px solid #d8dee9;border-radius:11px;margin:7px 0}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e7ebf2;display:flex;justify-content:center;gap:4px;padding:8px;z-index:20}
+.nav button{background:transparent;padding:9px 12px;color:#667085}.nav .on{color:#365cff;font-weight:700}
+.option{display:block;width:100%;text-align:left;padding:13px;margin:8px 0;border:1px solid #dfe4ec;border-radius:11px;background:#fff}
+.option.correct{border-color:#20a464;background:#edfff5}.option.wrong{border-color:#e05252;background:#fff0f0}
+.progress{height:10px;background:#e8edf4;border-radius:99px;overflow:hidden}.bar{height:100%;background:#365cff}
+.info-box{background:#f8fafc;border:1px solid #e7ebf2;border-radius:14px;padding:13px;margin:11px 0}
+.note h3{margin-top:18px}.note li{margin:7px 0;line-height:1.45}
+.video-card{border:1px solid #e7ebf2;border-radius:14px;padding:14px;margin:9px 0}
+.video-card b{display:block;margin-bottom:4px}
+.stat{display:inline-block;padding:8px 10px;border-radius:10px;background:#f8fafc;margin:4px 4px 4px 0}
+.tag{font-size:11px;color:#667085}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card{border-radius:15px}}
+@media print{header,.nav,.no-print{display:none!important}main{padding:0}.card{box-shadow:none}}
+</style>
+</head>
+<body>
+<header>
+ <div class="brand">LearnUp 📚</div>
+ <div class="sub">Classes 6–10 • Karnataka State Board + CBSE • V3</div>
+</header>
+<main id="app"></main>
+<div class="nav" id="nav"></div>
+
+<script>
+/* =========================================================
+   LEARNUP V3
+   - Keeps the existing localStorage progress model.
+   - YouTube uses targeted search links; no API key is required.
+   - Notes are generated from board/class/subject/chapter metadata.
+   - Practice mode always provides 25 self-check questions.
+   ========================================================= */
+
+const data={
+"Karnataka State Board":{
+"6":{
+"Mathematics":["Knowing Our Numbers","Whole Numbers","Playing with Numbers","Basic Geometrical Ideas","Understanding Elementary Shapes"],
+"Science":["Food: Where Does It Come From?","Components of Food","Fibre to Fabric","Sorting Materials into Groups","Separation of Substances"],
+"Social Science":["The Earth and Its Motions","Globe: Latitudes and Longitudes","India: Location and Physical Features","Our Karnataka","The Government"],
+"English":["Reading and Comprehension","Grammar","Vocabulary","Writing Skills","Communication"],
+"Kannada":["ಪದಗಳ ಪರಿಚಯ","ವಾಕ್ಯ ರಚನೆ","ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ"]},
+"7":{
+"Mathematics":["Integers","Fractions and Decimals","Data Handling","Simple Equations","Lines and Angles"],
+"Science":["Nutrition in Plants","Nutrition in Animals","Heat","Acids, Bases and Salts","Physical and Chemical Changes"],
+"Social Science":["Medieval India","State Government","The Atmosphere","Karnataka: History and Culture","Resources"],
+"English":["Reading","Grammar","Writing","Vocabulary","Literature"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಅಭಿವ್ಯಕ್ತಿ"]},
+"8":{
+"Mathematics":["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Data Handling","Squares and Square Roots"],
+"Science":["Crop Production and Management","Microorganisms","Coal and Petroleum","Combustion and Flame","Conservation of Plants and Animals"],
+"Social Science":["The Constitution","Parliament and Government","The Indian National Movement","Industries","Human Resources"],
+"English":["Reading","Grammar","Writing","Literature","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಸಂವಹನ"]},
+"9":{
+"Mathematics":["Number Systems","Polynomials","Coordinate Geometry","Linear Equations","Geometry"],
+"Science":["Matter in Our Surroundings","Is Matter Around Us Pure?","Atoms and Molecules","Structure of the Atom","The Fundamental Unit of Life"],
+"Social Science":["India and the Contemporary World","Democratic Politics","Contemporary India","Economics","Karnataka Studies"],
+"English":["Reading Skills","Writing and Grammar","Literature","Vocabulary","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಸಾಹಿತ್ಯ"]},
+"10":{
+"Mathematics":["Real Numbers","Polynomials","Pair of Linear Equations","Quadratic Equations","Triangles"],
+"Science":["Chemical Reactions and Equations","Acids, Bases and Salts","Metals and Non-metals","Carbon Compounds","Life Processes"],
+"Social Science":["History","Political Science","Geography","Economics","Karnataka Studies"],
+"English":["Reading","Writing and Grammar","Literature","Language Practice","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಸಾಹಿತ್ಯ","ಬರವಣಿಗೆ"]}},
+"CBSE":{
+"6":{
+"Mathematics":["Patterns in Mathematics","Lines and Angles","Number Play","Data Handling and Presentation","Prime Time"],
+"Science":["The Wonderful World of Science","Diversity in the Living World","Mindful Eating: A Path to a Healthy Body","Exploring Magnets","Measurement of Length and Motion"],
+"Social Science":["Locating Places on the Earth","Oceans and Continents","Landforms and Life","Timeline and Sources of History","India That Is Bharat"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]},
+"7":{
+"Mathematics":["Integers","Fractions, Decimals and Percentages","Algebraic Expressions","Lines and Angles","Data Handling"],
+"Science":["Nutrition in Plants","Heat Transfer","Acids and Bases","Motion and Time","Electric Current and Its Effects"],
+"Social Science":["New Kings and Kingdoms","The Delhi Sultans","The Mughal Empire","Environment","Markets Around Us"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]},
+"8":{
+"Mathematics":["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Data Handling","Squares and Square Roots"],
+"Science":["Crop Production","Microorganisms","Coal and Petroleum","Combustion and Flame","Conservation of Plants and Animals"],
+"Social Science":["The Indian Constitution","Understanding Secularism","Why Do We Need a Parliament?","Resources","Industries"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]},
+"9":{
+"Mathematics":["Number Systems","Polynomials","Coordinate Geometry","Linear Equations in Two Variables","Euclid's Geometry"],
+"Science":["Matter in Our Surroundings","Is Matter Around Us Pure?","Atoms and Molecules","Structure of the Atom","The Fundamental Unit of Life"],
+"Social Science":["The French Revolution","Socialism in Europe","India: Size and Location","What Is Democracy? Why Democracy?","People as Resource"],
+"English":["Language and Literature","Reading","Grammar","Writing","Vocabulary"],
+"Languages":["Language 1","Language 2","R3"]},
+"10":{
+"Mathematics":["Real Numbers","Polynomials","Pair of Linear Equations in Two Variables","Quadratic Equations","Arithmetic Progressions"],
+"Science":["Chemical Reactions and Equations","Acids, Bases and Salts","Metals and Non-metals","Carbon Compounds","Life Processes"],
+"Social Science":["The Rise of Nationalism in Europe","Nationalism in India","Resources and Development","Power Sharing","Development"],
+"English":["Language and Literature","Reading","Grammar","Writing","Vocabulary"],
+"Languages":["Language 1","Language 2","R3 / Optional Language"]}}
+};
+
+/* Karnataka display translations for common subject names. */
+const knSubject={
+"Mathematics":"ಗಣಿತ","Science":"ವಿಜ್ಞಾನ","Social Science":"ಸಾಮಾಜಿಕ ವಿಜ್ಞಾನ",
+"English":"ಇಂಗ್ಲಿಷ್","Kannada":"ಕನ್ನಡ"
+};
+
+const ui={
+en:{
+home:"Home",progress:"Progress",profile:"Profile",chapters:"chapters",
+open:"📖 Open Chapter",video:"🎥 5 Lesson Videos",notes:"📥 Download Exam Notes",
+exam:"⭐ Exam Focus",quiz:"📝 25-Question Practice",complete:"✓ Mark Chapter Complete",
+back:"← Back",important:"Important concepts",examples:"Important examples",
+mistakes:"Common mistakes",revision:"Quick revision",print:"🖨️ Print / Save as PDF",
+search:"Open YouTube search",completed:"Completed",best:"Best score"
+},
+kn:{
+home:"ಮುಖ್ಯಪುಟ",progress:"ಪ್ರಗತಿ",profile:"ಪ್ರೊಫೈಲ್",chapters:"ಅಧ್ಯಾಯಗಳು",
+open:"📖 ಅಧ್ಯಾಯ ತೆರೆಯಿರಿ",video:"🎥 5 ಪಾಠ ವೀಡಿಯೊಗಳು",notes:"📥 ಪರೀಕ್ಷಾ ಟಿಪ್ಪಣಿಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ",
+exam:"⭐ ಪರೀಕ್ಷಾ ಗಮನ",quiz:"📝 25 ಪ್ರಶ್ನೆಗಳ ಅಭ್ಯಾಸ",complete:"✓ ಅಧ್ಯಾಯ ಪೂರ್ಣಗೊಳಿಸಿ",
+back:"← ಹಿಂದಕ್ಕೆ",important:"ಮುಖ್ಯ ಪರಿಕಲ್ಪನೆಗಳು",examples:"ಮುಖ್ಯ ಉದಾಹರಣೆಗಳು",
+mistakes:"ಸಾಮಾನ್ಯ ತಪ್ಪುಗಳು",revision:"ತ್ವರಿತ ಪುನರವಲೋಕನ",print:"🖨️ ಮುದ್ರಿಸಿ / PDF ಆಗಿ ಉಳಿಸಿ",
+search:"YouTube ಹುಡುಕಾಟ ತೆರೆಯಿರಿ",completed:"ಪೂರ್ಣಗೊಂಡಿದೆ",best:"ಅತ್ಯುತ್ತಮ ಅಂಕ"
+}
+};
+
+let state=JSON.parse(localStorage.getItem("learnup_v3")||localStorage.getItem("learnup_v2")||"{}");
+state.user=state.user||null; state.board=state.board||null; state.cls=state.cls||null;
+state.done=state.done||{}; state.quiz=state.quiz||{};
+
+function save(){localStorage.setItem("learnup_v3",JSON.stringify(state))}
+function lang(){return state.board==="Karnataka State Board"?"kn":"en"}
+function L(k){return ui[lang()][k]}
+function esc(x){return String(x).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function subjectLabel(s){return lang()==="kn"&&knSubject[s]?knSubject[s]:s}
+function key(s,c){return state.board+"|"+state.cls+"|"+s+"|"+c}
+function safeId(x){return String(x).replace(/[^a-zA-Z0-9]/g,"_")}
+
+function render(){if(!state.user){document.getElementById("nav").style.display="none";login()}else{document.getElementById("nav").style.display="flex";home()}}
+function login(){
+ document.getElementById("app").innerHTML=`
+ <div class="card">
+  <h1>Welcome to LearnUp V3 🚀</h1>
+  <p class="muted">Board-focused learning, exam practice, notes and video discovery.</p>
+  <label>Your name</label><input id="name" placeholder="Enter student name" value="${esc(state.user||"")}">
+  <h3>Choose board</h3>
+  <div class="grid">${Object.keys(data).map(b=>`<button class="choice ${state.board===b?"active":""}" onclick="pickBoard('${esc(b)}')"><b>${esc(b)}</b><span>${b==="CBSE"?"English learning path":"ಕನ್ನಡ learning path"}</span></button>`).join("")}</div>
+  <h3 style="margin-top:18px">Choose class</h3>
+  <div class="grid">${[6,7,8,9,10].map(c=>`<button class="choice ${state.cls==c?"active":""}" onclick="pickClass(${c})"><b>Class ${c}</b><span>Subjects & chapters</span></button>`).join("")}</div>
+  <button class="primary" style="width:100%;margin-top:15px" onclick="start()">Continue →</button>
+ </div>`;
+}
+function pickBoard(b){state.board=b;save();login()}
+function pickClass(c){state.cls=c;save();login()}
+function start(){
+ let n=document.getElementById("name").value.trim()||state.user;
+ if(!n||!state.board||!state.cls){alert("Please enter your name, board and class.");return}
+ state.user=n;save();render()
+}
+
+function home(){
+ let subs=Object.keys(data[state.board][state.cls]);
+ let total=subs.reduce((a,s)=>a+data[state.board][state.cls][s].length,0);
+ let done=Object.keys(state.done).filter(k=>k.startsWith(state.board+"|"+state.cls+"|")).length;
+ document.getElementById("app").innerHTML=`
+ <div class="card">
+  <h1>${lang()==="kn"?"ನಮಸ್ಕಾರ":"Hello"}, ${esc(state.user)} 👋</h1>
+  <p class="muted">${esc(state.board)} • Class ${state.cls}</p>
+  <div class="progress"><div class="bar" style="width:${total?Math.min(100,done/total*100):0}%"></div></div>
+  <p class="small">${done}/${total} ${L("chapters")} • V3 learning mode</p>
+ </div>
+ <h2>${lang()==="kn"?"ವಿಷಯಗಳು":"Subjects"}</h2>
+ ${subs.map(s=>`<div class="subject" onclick="subjects('${esc(s)}')"><b>${esc(subjectLabel(s))}</b><br><span class="pill">${data[state.board][state.cls][s].length} ${L("chapters")}</span></div>`).join("")}
+ <div class="card">
+  <b>🎯 ${lang()==="kn"?"ಪರೀಕ್ಷಾ ಅಭ್ಯಾಸ":"Exam-focused practice"}</b>
+  <p class="small muted">${lang()==="kn"?"ಅಧ್ಯಾಯಕ್ಕೆ 25 ಪ್ರಶ್ನೆಗಳ ಅಭ್ಯಾಸ, ಪರೀಕ್ಷಾ ಗಮನ, ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ವೀಡಿಯೊ ಹುಡುಕಾಟ.":"Each chapter includes exam focus, 25-question practice, downloadable notes and 5 targeted YouTube searches."}</p>
+ </div>`;
+}
+
+function subjects(s){
+ let ch=data[state.board][state.cls][s];
+ document.getElementById("app").innerHTML=`
+ <button class="secondary back" onclick="home()">${L("back")} ${lang()==="kn"?"ಮುಖ್ಯಪುಟ":""}</button>
+ <div class="card"><span class="pill">${esc(state.board)}</span><h2>${esc(subjectLabel(s))}</h2><p class="muted">Class ${state.cls}</p></div>
+ ${ch.map((c,i)=>`<div class="chapter">
+  <b>${i+1}. ${esc(c)}</b><br>
+  <span class="small muted">${state.done[key(s,c)]?"✓ "+L("completed"):"Notes • Exam focus • Quiz • Videos"}</span><br>
+  <button onclick="lesson('${esc(s)}','${esc(c)}')">${L("open")}</button>
+  <button class="video-button" onclick="videos('${esc(s)}','${esc(c)}')">${L("video")}</button>
+  <button class="download" onclick="downloadNotes('${esc(s)}','${esc(c)}')">${L("notes")}</button>
+ </div>`).join("")}`;
+}
+
+/* Five targeted YouTube searches, not fabricated video results. */
+function videoQueries(s,c){
+ const suffix=state.board==="Karnataka State Board"?" Kannada":"";
+ const base=`${state.board} Class ${state.cls} ${s} ${c}`;
+ return [
+  ["Full chapter lesson",`${base} full chapter lesson${suffix}`],
+  ["Concept explanation",`${base} concepts explanation${suffix}`],
+  ["Important questions",`${base} important questions exam${suffix}`],
+  ["Quick revision",`${base} quick revision${suffix}`],
+  ["Exam preparation",`${base} exam preparation${suffix}`]
+ ];
+}
+function videos(s,c){
+ document.getElementById("app").innerHTML=`
+ <button class="secondary" onclick="subjects('${esc(s)}')">${L("back")}</button>
+ <div class="card"><h2>🎥 ${esc(c)}</h2><p class="muted">${esc(subjectLabel(s))} • Class ${state.cls}</p>
+ <div class="info-box"><b>${lang()==="kn"?"5 ಗುರಿಪಡಿಸಿದ YouTube ಹುಡುಕಾಟಗಳು":"5 targeted YouTube lesson searches"}</b><p class="small muted">${lang()==="kn"?"LearnUp ಸ್ವತಃ ವೀಡಿಯೊ ಹೋಸ್ಟ್ ಮಾಡುವುದಿಲ್ಲ; ಪ್ರತಿ ಹುಡುಕಾಟವು ಸರಿಯಾದ board/class/subject/chapter ಪದಗಳನ್ನು ಬಳಸುತ್ತದೆ.":"These are targeted YouTube searches, so no YouTube API key is required and you always see current available videos."}</p></div>
+ ${videoQueries(s,c).map((q,i)=>`<div class="video-card"><b>${i+1}. ${q[0]}</b><span class="tag">${esc(q[1])}</span><br><button class="video-button" onclick="openYT(${JSON.stringify(q[1])})">${L("search")}</button></div>`).join("")}
+ </div>`;
+}
+function openYT(q){window.open("https://www.youtube.com/results?search_query="+encodeURIComponent(q),"_blank")}
+
+/* Board-aware notes. These are study notes/templates, not a claim that every line is an official textbook reproduction. */
+const subjectFocus={
+"Mathematics":["definitions and properties","worked examples","formulas/rules","step-by-step problem solving","application questions"],
+"Science":["key terms and definitions","processes and observations","laws/principles","diagrams and examples","reasoning/application questions"],
+"Social Science":["key events/concepts","causes and effects","important terms","maps/data/examples where relevant","compare/explain questions"],
+"English":["reading comprehension","grammar rules","vocabulary","writing structure","literature/communication skills"],
+"Kannada":["ಪದಗಳ ಅರ್ಥ","ವ್ಯಾಕರಣ ನಿಯಮಗಳು","ಗದ್ಯ/ಪದ್ಯದ ಮುಖ್ಯ ಅಂಶಗಳು","ಬರವಣಿಗೆ ಅಭ್ಯಾಸ","ಅಭಿವ್ಯಕ್ತಿ"],
+"Languages":["language skills","grammar","vocabulary","reading","writing"]
+};
+function makeNotes(s,c){
+ let f=subjectFocus[s]||["key concepts","definitions","examples","applications","revision"];
+ let isKn=lang()==="kn";
+ return {
+  title:c,
+  overview:isKn?`${c} ಅಧ್ಯಾಯವನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಮೊದಲು ಮುಖ್ಯ ಪದಗಳು, ಪರಿಕಲ್ಪನೆಗಳು ಮತ್ತು ಉದಾಹರಣೆಗಳನ್ನು ಗುರುತಿಸಿ. ಪಠ್ಯಪುಸ್ತಕದ ವ್ಯಾಖ್ಯಾನಗಳನ್ನು ಗಮನದಿಂದ ಓದಿ ಮತ್ತು ನಿಮ್ಮದೇ ಪದಗಳಲ್ಲಿ ಪುನರವಲೋಕನ ಮಾಡಿ.`:`Study ${c} by identifying the main terms, concepts, examples and applications. Read the prescribed textbook carefully and revise the definitions and worked examples in your own words.`,
+  focus:f,
+  examples:isKn?["ಪಠ್ಯಪುಸ್ತಕದಲ್ಲಿರುವ ಪ್ರಮುಖ ಉದಾಹರಣೆಗಳನ್ನು ಹಂತ ಹಂತವಾಗಿ ಬಿಡಿಸಿ.","ಒಂದು ವ್ಯಾಖ್ಯಾನ/ನಿಯಮಕ್ಕೆ ಕನಿಷ್ಠ ಒಂದು ಸ್ವಂತ ಉದಾಹರಣೆ ಬರೆಯಿರಿ.","ಪರೀಕ್ಷೆಯಲ್ಲಿ ಉತ್ತರದ ಮುಖ್ಯ ಪದಗಳನ್ನು ಅಂಡರ್‌ಲೈನ್ ಮಾಡಿ."]:["Work through the important textbook examples step by step.","Write at least one original example for each major definition or rule.","In exam answers, underline key terms and show working where needed."],
+  mistakes:isKn?["ಪ್ರಶ್ನೆಯನ್ನು ಪೂರ್ಣವಾಗಿ ಓದದೆ ಉತ್ತರಿಸುವುದು.","ಘಟಕಗಳು/ಚಿಹ್ನೆಗಳು/ದಿನಾಂಕಗಳು/ಪದಗಳ ತಪ್ಪು ಬಳಕೆ.","ಗಣಿತದಲ್ಲಿ ಹಂತಗಳನ್ನು ಬಿಟ್ಟು ಅಂತಿಮ ಉತ್ತರ ಮಾತ್ರ ಬರೆಯುವುದು.","ದೀರ್ಘ ಉತ್ತರಗಳಲ್ಲಿ ಮುಖ್ಯ ಅಂಶಗಳನ್ನು ಕ್ರಮಬದ್ಧವಾಗಿ ಬರೆಯದಿರುವುದು."]:["Answering before reading the full question.","Using incorrect units, symbols, dates or terminology.","Skipping working steps in numerical problems.","Writing long answers without clear points or structure."],
+  revision:isKn?`1. ಮುಖ್ಯ ಪದಗಳು → 2. ನಿಯಮ/ಪರಿಕಲ್ಪನೆ → 3. ಉದಾಹರಣೆ → 4. ಅನ್ವಯ ಪ್ರಶ್ನೆ → 5. ಸ್ವಯಂ ಪರೀಕ್ಷೆ.`:`1. Key terms → 2. Rule/concept → 3. Example → 4. Application question → 5. Self-test.`
+ };
+}
+function lesson(s,c){
+ let n=makeNotes(s,c), k=key(s,c), best=state.quiz[k]||0;
+ document.getElementById("app").innerHTML=`
+ <button class="secondary no-print" onclick="subjects('${esc(s)}')">${L("back")}</button>
+ <div class="card note" id="noteCard">
+  <span class="pill">${esc(state.board)} • Class ${state.cls} • ${esc(subjectLabel(s))}</span>
+  <h1 style="margin-top:9px">${esc(c)}</h1>
+  <p>${esc(n.overview)}</p>
+  <h3>⭐ ${L("exam")}</h3>
+  <ul>${n.focus.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <h3>📌 ${L("important")}</h3>
+  <div class="info-box">${esc(n.focus.map(x=>x.charAt(0).toUpperCase()+x.slice(1)).join(" • "))}</div>
+  <h3>🧠 ${L("examples")}</h3><ul>${n.examples.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <h3>⚠️ ${L("mistakes")}</h3><ul>${n.mistakes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+  <h3>🔁 ${L("revision")}</h3><div class="info-box">${esc(n.revision)}</div>
+  <div class="info-box"><b>25-question practice</b><br><span class="small muted">${best?L("best")+": "+best+"%":"No attempt yet"}</span></div>
+ </div>
+ <div class="card no-print">
+  <button class="primary" onclick="quiz('${esc(s)}','${esc(c)}')">${L("quiz")}</button>
+  <button class="video-button" onclick="videos('${esc(s)}','${esc(c)}')">${L("video")}</button>
+  <button class="download" onclick="downloadNotes('${esc(s)}','${esc(c)}')">${L("notes")}</button>
+  <button class="secondary" onclick="window.print()">${L("print")}</button>
+  <button class="secondary" onclick="complete('${esc(s)}','${esc(c)}')">${L("complete")}</button>
+ </div>`;
+}
+
+/* A scalable 25-question self-check bank.
+   It deliberately avoids pretending that generated questions are official board questions.
+   It tests study readiness around the chapter/topic. */
+function buildQuiz(s,c){
+ let isKn=lang()==="kn", out=[];
+ const q=[
+  ["Which item is the central topic of this chapter?",c,[c,"An unrelated topic","A random activity","None of these"],0],
+  ["What should you study first in this chapter?", "Key concepts and definitions",["Only answers","Only videos","Only handwriting","Key concepts and definitions"],3],
+  ["Which resource should be treated as the primary syllabus reference?","Prescribed textbook",["A random website","An unrelated video","A social-media post","Prescribed textbook"],0],
+  ["A good exam answer should be:", "Clear and relevant",["Very long and unrelated","Only one word always","Copied without understanding","Clear and relevant"],3],
+  ["What improves numerical problem solving?","Showing steps",["Skipping working","Guessing","Changing units randomly","Showing steps"],0],
+  ["What improves revision?","Active recall and practice",["Reading once","Ignoring mistakes","Memorising headings only","Active recall and practice"],3],
+  ["What should you do with a difficult concept?","Break it into smaller ideas",["Skip the whole subject","Guess every answer","Memorise without meaning","Break it into smaller ideas"],3],
+  ["Why are examples useful?","They show how concepts are applied",["They replace the syllabus","They are always optional","They have no learning value","They show how concepts are applied"],0],
+  ["What is a common exam mistake?","Not reading the question carefully",["Checking the answer","Using correct terms","Showing working","Not reading the question carefully"],0],
+  ["For a long-answer question, a useful structure is:", "Point → explanation → example",["Random sentences","Only the title","Only the final word","Point → explanation → example"],3],
+  ["Which habit helps accuracy?","Checking the final answer",["Submitting immediately","Ignoring units","Skipping keywords","Checking the final answer"],0],
+  ["If a question asks 'explain', you should usually:", "Give the idea with supporting details",["Write only the heading","Give an unrelated definition","Leave it blank","Give the idea with supporting details"],0],
+  ["If a question asks 'differentiate', you should:", "Give clear points of difference",["Write a story","Repeat one point","Only give a title","Give clear points of difference"],3],
+  ["If a question asks 'define', you should:", "Give a precise meaning",["Give a long unrelated paragraph","Draw anything","Give only an example","Give a precise meaning"],3],
+  ["What is the safest source for exact board wording?","Your prescribed textbook and board material",["A random post","A comment","An unrelated app","Your prescribed textbook and board material"],0],
+  ["Why should you practise after studying?","To check whether you can recall and apply",["To avoid learning","To increase confusion","To skip revision","To check whether you can recall and apply"],3],
+  ["Which is better before an exam?","Short repeated revision",["One huge reading only","No practice","Only guessing","Short repeated revision"],0],
+  ["What should you do when you make a mistake?","Understand and correct it",["Delete the chapter","Ignore it","Repeat it intentionally","Understand and correct it"],0],
+  ["What makes a good study note?","Short, organised and accurate points",["Unrelated paragraphs","Only decoration","Copied comments","Short, organised and accurate points"],0],
+  ["For science/social answers, keywords are useful because they:", "Show the main ideas clearly",["Replace understanding","Make answers longer only","Are unrelated","Show the main ideas clearly"],3],
+  ["For language subjects, regular practice improves:", "Reading, writing and grammar",["Only drawing","Only calculation","Nothing","Reading, writing and grammar"],0],
+  ["What should you revise immediately before a test?", "Key points, formulas/rules and mistakes",["Only the cover page","Only unrelated notes","Nothing","Key points, formulas/rules and mistakes"],3],
+  ["What is an application question testing?", "Use of knowledge in a situation",["Handwriting only","Memory of page number","Speed only","Use of knowledge in a situation"],3],
+  ["After completing this chapter, you should be able to:", "Explain the core ideas and answer practice questions",["Only name the chapter","Avoid examples","Skip questions","Explain the core ideas and answer practice questions"],3]
+ ];
+ q.forEach(x=>out.push(isKn?[
+  x[0].replace("Which item is the central topic of this chapter?","ಈ ಅಧ್ಯಾಯದ ಮುಖ್ಯ ವಿಷಯ ಯಾವುದು?").replace("What should you study first in this chapter?","ಈ ಅಧ್ಯಾಯದಲ್ಲಿ ಮೊದಲು ಏನು ಓದಬೇಕು?").replace("Which resource should be treated as the primary syllabus reference?","ಮುಖ್ಯ ಪಠ್ಯಕ್ರಮದ ಆಧಾರ ಯಾವುದು?"),
+  x[1],x[2],x[3]
+ ]:x));
+ return out;
+}
+
+let quizIndex=0,quizScore=0,quizQs=[];
+function quiz(s,c){
+ quizQs=buildQuiz(s,c);quizIndex=0;quizScore=0;drawQuiz(s,c);
+}
+function drawQuiz(s,c){
+ let q=quizQs[quizIndex];
+ document.getElementById("app").innerHTML=`
+ <div class="card">
+  <p class="small muted">Question ${quizIndex+1} of 25 • ${esc(c)}</p>
+  <div class="progress"><div class="bar" style="width:${quizIndex/25*100}%"></div></div>
+  <h2 style="margin-top:16px">${esc(q[0])}</h2>
+  ${q[2].map((o,j)=>`<button class="option" onclick="answerQuiz(${j},'${esc(s)}','${esc(c)}')">${esc(o)}</button>`).join("")}
+ </div>`;
+}
+function answerQuiz(j,s,c){
+ let q=quizQs[quizIndex],opts=document.querySelectorAll(".option");
+ opts.forEach(x=>x.disabled=true);
+ if(j===q[3]){quizScore++;opts[j].classList.add("correct")}else{opts[j].classList.add("wrong");opts[q[3]].classList.add("correct")}
+ setTimeout(()=>{quizIndex++;if(quizIndex<25)drawQuiz(s,c);else finishQuiz(s,c)},500);
+}
+function finishQuiz(s,c){
+ let k=key(s,c),score=Math.round(quizScore/25*100);
+ state.quiz[k]=Math.max(state.quiz[k]||0,score);save();
+ document.getElementById("app").innerHTML=`
+ <div class="card">
+  <h1>🎉 Quiz complete</h1><h2>${quizScore}/25</h2>
+  <p>Score: ${score}% • ${L("best")}: ${state.quiz[k]}%</p>
+  <button class="primary" onclick="lesson('${esc(s)}','${esc(c)}')">${L("back")}</button>
+  <button class="secondary" onclick="quiz('${esc(s)}','${esc(c)}')">Try again</button>
+ </div>`;
+}
+function complete(s,c){state.done[key(s,c)]=Date.now();save();lesson(s,c)}
+
+function notesText(s,c){
+ let n=makeNotes(s,c), isKn=lang()==="kn";
+ return `${isKn?"LEARNUP V3 — ಪರೀಕ್ಷಾ ಟಿಪ್ಪಣಿಗಳು":"LEARNUP V3 — EXAM NOTES"}
+${state.board} | Class ${state.cls}
+${subjectLabel(s)} | ${c}
+${"=".repeat(55)}
+
+${isKn?"ಅಧ್ಯಾಯದ ಪರಿಚಯ":"CHAPTER OVERVIEW"}
+${n.overview}
+
+${isKn?"ಪರೀಕ್ಷಾ ಗಮನ":"EXAM FOCUS"}
+${n.focus.map((x,i)=>`${i+1}. ${x}`).join("\n")}
+
+${isKn?"ಮುಖ್ಯ ಉದಾಹರಣೆಗಳು":"IMPORTANT EXAMPLES"}
+${n.examples.map((x,i)=>`${i+1}. ${x}`).join("\n")}
+
+${isKn?"ಸಾಮಾನ್ಯ ತಪ್ಪುಗಳು":"COMMON MISTAKES"}
+${n.mistakes.map((x,i)=>`${i+1}. ${x}`).join("\n")}
+
+${isKn?"ತ್ವರಿತ ಪುನರವಲೋಕನ":"QUICK REVISION"}
+${n.revision}
+
+NOTE:
+These LearnUp notes are study guidance. Always verify exact syllabus,
+definitions, diagrams, marks and textbook-specific wording against the
+current prescribed board textbook and official board material.
+`;
+}
+function downloadNotes(s,c){
+ let blob=new Blob([notesText(s,c)],{type:"text/plain;charset=utf-8"});
+ let a=document.createElement("a");a.href=URL.createObjectURL(blob);
+ a.download=`LearnUp_${state.board.replace(/\s+/g,"_")}_Class_${state.cls}_${c.replace(/[^\w\u0C80-\u0CFF]+/g,"_")}_Notes.txt`;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
+function progress(){
+ let done=Object.keys(state.done).filter(k=>k.startsWith(state.board+"|"+state.cls+"|")).length;
+ let scores=Object.entries(state.quiz).filter(([k])=>k.startsWith(state.board+"|"+state.cls+"|"));
+ document.getElementById("app").innerHTML=`
+ <div class="card"><h2>${L("progress")}</h2><p class="muted">${esc(state.board)} • Class ${state.cls}</p>
+ <span class="stat">✓ ${done} ${L("chapters")}</span><span class="stat">📝 ${scores.length} quizzes</span></div>
+ ${scores.map(([k,v])=>`<div class="chapter"><b>${esc(k.split("|").slice(2).join(" • "))}</b><br><span class="pill">${L("best")}: ${v}%</span></div>`).join("")||`<div class="card muted">No quiz scores yet.</div>`}`;
+}
+function profile(){
+ document.getElementById("app").innerHTML=`<div class="card"><h2>${L("profile")}</h2>
+ <p><b>Name:</b> ${esc(state.user)}</p><p><b>Board:</b> ${esc(state.board)}</p><p><b>Class:</b> ${state.cls}</p>
+ <button class="secondary" onclick="change()">Change board/class</button>
+ <button class="secondary" onclick="resetApp()">Reset device data</button></div>`;
+}
+function change(){state.user=null;save();render()}
+function resetApp(){if(confirm("Reset all LearnUp progress on this device?")){localStorage.removeItem("learnup_v3");localStorage.removeItem("learnup_v2");location.reload()}}
+function nav(){
+ document.getElementById("nav").innerHTML=`<button class="on" onclick="home()">🏠 ${L("home")}</button><button onclick="progress()">📈 ${L("progress")}</button><button onclick="profile()">👤 ${L("profile")}</button>`;
+}
+nav();render();
+</script>
+</body>
+</html>
