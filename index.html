@@ -1,1 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>LearnUp 6–10 | Dual Board</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}
+button,select,input{font:inherit}
+button{cursor:pointer;border:0}
+header{background:#fff;padding:18px 18px 12px;position:sticky;top:0;z-index:5;border-bottom:1px solid #e7ebf2}
+.brand{font-size:25px;font-weight:800}
+.sub{color:#667085;font-size:13px;margin-top:3px}
+main{max-width:850px;margin:auto;padding:18px 16px 90px}
+.card{background:#fff;border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 18px #1720330d}
+h1,h2,h3{margin:0 0 10px}
+.muted{color:#667085}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.choice{padding:20px;border-radius:16px;background:#f8fafc;border:2px solid #e6eaf0;text-align:left}
+.choice.active{border-color:#365cff;background:#eef2ff}
+.choice b{display:block;font-size:18px}
+.choice span{font-size:13px;color:#667085}
+.subject{padding:16px;border-radius:15px;background:#f8fafc;margin:9px 0;border:1px solid #e8ecf2;cursor:pointer}
+.subject b{font-size:17px}
+.pill{display:inline-block;background:#eef2ff;color:#365cff;padding:5px 9px;border-radius:99px;font-size:12px;margin-top:7px}
+.chapter{padding:15px;border:1px solid #e7ebf2;border-radius:14px;margin:9px 0;background:#fff}
+.chapter button{background:#365cff;color:#fff;padding:9px 12px;border-radius:10px;margin-top:8px}
+input{width:100%;padding:13px;border:1px solid #d8dee9;border-radius:11px;margin:7px 0}
+.primary{background:#365cff;color:white;padding:13px 17px;border-radius:12px;font-weight:700}
+.secondary{background:#eef2ff;color:#365cff;padding:11px 14px;border-radius:11px}
+.video-button{background:#ff0000!important;color:#fff!important}
+.nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e7ebf2;display:flex;justify-content:center;gap:7px;padding:8px;z-index:8}
+.nav button{background:transparent;padding:8px 12px;color:#667085}
+.nav .on{color:#365cff;font-weight:700}
+.option{display:block;width:100%;text-align:left;padding:13px;margin:9px 0;border:1px solid #dfe4ec;border-radius:11px;background:#fff}
+.option.correct{border-color:#20a464;background:#edfff5}
+.option.wrong{border-color:#e05252;background:#fff0f0}
+.progress{height:10px;background:#e8edf4;border-radius:99px;overflow:hidden}
+.bar{height:100%;background:#365cff}
+.small{font-size:12px}
+.back{margin-bottom:12px}
+.info-box{background:#f8fafc;border:1px solid #e7ebf2;border-radius:14px;padding:14px;margin:12px 0}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.card{border-radius:15px}}
+</style>
+</head>
+<body>
 
+<header>
+  <div class="brand">LearnUp 📚</div>
+  <div class="sub">Classes 6–10 • Karnataka State Board + CBSE</div>
+</header>
+
+<main id="app"></main>
+<div class="nav" id="nav"></div>
+
+<script>
+const data={
+"Karnataka State Board":{
+"6":{
+"Mathematics":["Knowing Our Numbers","Whole Numbers","Playing with Numbers","Basic Geometrical Ideas","Understanding Elementary Shapes"],
+"Science":["Food: Where Does It Come From?","Components of Food","Fibre to Fabric","Sorting Materials into Groups","Separation of Substances"],
+"Social Science":["The Earth and Its Motions","Globe: Latitudes and Longitudes","India: Location and Physical Features","Our Karnataka","The Government"],
+"English":["Reading and Comprehension","Grammar","Vocabulary","Writing Skills","Communication"],
+"Kannada":["ಪದಗಳ ಪರಿಚಯ","ವಾಕ್ಯ ರಚನೆ","ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ"]
+},
+"7":{
+"Mathematics":["Integers","Fractions and Decimals","Data Handling","Simple Equations","Lines and Angles"],
+"Science":["Nutrition in Plants","Nutrition in Animals","Heat","Acids, Bases and Salts","Physical and Chemical Changes"],
+"Social Science":["Medieval India","State Government","The Atmosphere","Karnataka: History and Culture","Resources"],
+"English":["Reading","Grammar","Writing","Vocabulary","Literature"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಅಭಿವ್ಯಕ್ತಿ"]
+},
+"8":{
+"Mathematics":["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Data Handling","Squares and Square Roots"],
+"Science":["Crop Production and Management","Microorganisms","Coal and Petroleum","Combustion and Flame","Conservation of Plants and Animals"],
+"Social Science":["The Constitution","Parliament and Government","The Indian National Movement","Industries","Human Resources"],
+"English":["Reading","Grammar","Writing","Literature","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಸಂವಹನ"]
+},
+"9":{
+"Mathematics":["Number Systems","Polynomials","Coordinate Geometry","Linear Equations","Geometry"],
+"Science":["Matter in Our Surroundings","Is Matter Around Us Pure?","Atoms and Molecules","Structure of the Atom","The Fundamental Unit of Life"],
+"Social Science":["India and the Contemporary World","Democratic Politics","Contemporary India","Economics","Karnataka Studies"],
+"English":["Reading Skills","Writing and Grammar","Literature","Vocabulary","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಬರವಣಿಗೆ","ಸಾಹಿತ್ಯ"]
+},
+"10":{
+"Mathematics":["Real Numbers","Polynomials","Pair of Linear Equations","Quadratic Equations","Triangles"],
+"Science":["Chemical Reactions and Equations","Acids, Bases and Salts","Metals and Non-metals","Carbon Compounds","Life Processes"],
+"Social Science":["History","Political Science","Geography","Economics","Karnataka Studies"],
+"English":["Reading","Writing and Grammar","Literature","Language Practice","Communication"],
+"Kannada":["ಗದ್ಯ","ಪದ್ಯ","ವ್ಯಾಕರಣ","ಸಾಹಿತ್ಯ","ಬರವಣಿಗೆ"]
+}},
+"CBSE":{
+"6":{
+"Mathematics":["Patterns in Mathematics","Lines and Angles","Number Play","Data Handling and Presentation","Prime Time"],
+"Science":["The Wonderful World of Science","Diversity in the Living World","Mindful Eating: A Path to a Healthy Body","Exploring Magnets","Measurement of Length and Motion"],
+"Social Science":["Locating Places on the Earth","Oceans and Continents","Landforms and Life","Timeline and Sources of History","India That Is Bharat"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]
+},
+"7":{
+"Mathematics":["Integers","Fractions, Decimals and Percentages","Algebraic Expressions","Lines and Angles","Data Handling"],
+"Science":["Nutrition in Plants","Heat Transfer","Acids and Bases","Motion and Time","Electric Current and Its Effects"],
+"Social Science":["New Kings and Kingdoms","The Delhi Sultans","The Mughal Empire","Environment","Markets Around Us"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]
+},
+"8":{
+"Mathematics":["Rational Numbers","Linear Equations","Understanding Quadrilaterals","Data Handling","Squares and Square Roots"],
+"Science":["Crop Production","Microorganisms","Coal and Petroleum","Combustion and Flame","Conservation of Plants and Animals"],
+"Social Science":["The Indian Constitution","Understanding Secularism","Why Do We Need a Parliament?","Resources","Industries"],
+"English":["Reading","Grammar","Writing","Literature","Vocabulary"],
+"Languages":["R3 / School Language"]
+},
+"9":{
+"Mathematics":["Number Systems","Polynomials","Coordinate Geometry","Linear Equations in Two Variables","Euclid's Geometry"],
+"Science":["Matter in Our Surroundings","Is Matter Around Us Pure?","Atoms and Molecules","Structure of the Atom","The Fundamental Unit of Life"],
+"Social Science":["The French Revolution","Socialism in Europe","India: Size and Location","What Is Democracy? Why Democracy?","People as Resource"],
+"English":["Language and Literature","Reading","Grammar","Writing","Vocabulary"],
+"Languages":["Language 1","Language 2","R3"]
+},
+"10":{
+"Mathematics":["Real Numbers","Polynomials","Pair of Linear Equations in Two Variables","Quadratic Equations","Arithmetic Progressions"],
+"Science":["Chemical Reactions and Equations","Acids, Bases and Salts","Metals and Non-metals","Carbon Compounds","Life Processes"],
+"Social Science":["The Rise of Nationalism in Europe","Nationalism in India","Resources and Development","Power Sharing","Development"],
+"English":["Language and Literature","Reading","Grammar","Writing","Vocabulary"],
+"Languages":["Language 1","Language 2","R3 / Optional Language"]
+}}
+};
+
+const quizzes={
+"Mathematics|Real Numbers":[
+["Which number is irrational?","√2",["2","0.5","√2","4"],2],
+["HCF of 12 and 18 is?","6",["2","3","6","9"],2]],
+"Mathematics|Integers":[
+["What is −3 + 7?","4",["−10","−4","4","10"],2]],
+"Mathematics|Knowing Our Numbers":[
+["The place value of 7 in 57,432 is?","7,000",["7","70","700","7,000"],3]],
+"Mathematics|Number Systems":[
+["Which is a rational number?","3/5",["√2","π","3/5","√3"],2]]
+};
+
+let state=JSON.parse(localStorage.getItem("learnup_v2")||"{}");
+state.user=state.user||null;
+state.board=state.board||null;
+state.cls=state.cls||null;
+state.done=state.done||{};
+state.quiz=state.quiz||{};
+
+function save(){
+  localStorage.setItem("learnup_v2",JSON.stringify(state));
+}
+
+function esc(x){
+  return String(x).replace(/[&<>"']/g,m=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[m]));
+}
+
+function render(){
+  if(!state.user){
+    document.getElementById("nav").style.display="none";
+    login();
+    return;
+  }
+  document.getElementById("nav").style.display="flex";
+  home();
+}
+
+function login(){
+  document.getElementById("app").innerHTML=`
+  <div class="card">
+    <h1>Welcome to LearnUp</h1>
+    <p class="muted">One learning app for Classes 6–10 with two curriculum paths.</p>
+
+    <label>Your name</label>
+    <input id="name" placeholder="Enter student name" value="${esc(state.user||"")}">
+
+    <h3>Choose board</h3>
+    <div class="grid">
+      ${Object.keys(data).map(b=>`
+        <button class="choice ${state.board===b?'active':''}" onclick="pickBoard('${esc(b)}')">
+          <b>${esc(b)}</b>
+          <span>Board-specific learning path</span>
+        </button>
+      `).join("")}
+    </div>
+
+    <h3 style="margin-top:18px">Choose class</h3>
+    <div class="grid">
+      ${[6,7,8,9,10].map(c=>`
+        <button class="choice ${state.cls==c?'active':''}" onclick="pickClass(${c})">
+          <b>Class ${c}</b>
+          <span>Subjects & chapters</span>
+        </button>
+      `).join("")}
+    </div>
+
+    <button class="primary" style="width:100%;margin-top:15px" onclick="start()">
+      Continue →
+    </button>
+  </div>`;
+}
+
+function pickBoard(b){
+  state.board=b;
+  save();
+  login();
+}
+
+function pickClass(c){
+  state.cls=c;
+  save();
+  login();
+}
+
+function start(){
+  let n=document.getElementById("name").value.trim();
+  if(!n&&state.user)n=state.user;
+  if(!n||!state.board||!state.cls){
+    alert("Please enter your name, board and class.");
+    return;
+  }
+  state.user=n;
+  save();
+  render();
+}
+
+function home(){
+  let subjects=Object.keys(data[state.board][state.cls]);
+  let total=subjects.reduce((a,s)=>a+data[state.board][state.cls][s].length,0);
+  let done=Object.keys(state.done).filter(
+    k=>k.startsWith(state.board+"|"+state.cls+"|")
+  ).length;
+
+  document.getElementById("app").innerHTML=`
+    <div class="card">
+      <h1>Hello, ${esc(state.user)} 👋</h1>
+      <p class="muted">${esc(state.board)} • Class ${state.cls}</p>
+      <div class="progress">
+        <div class="bar" style="width:${total?Math.min(100,done/total*100):0}%"></div>
+      </div>
+      <p class="small">${done}/${total} chapters completed</p>
+    </div>
+
+    <h2>Subjects</h2>
+
+    ${subjects.map(s=>`
+      <div class="subject" onclick="subjects('${esc(s)}')">
+        <b>${esc(s)}</b>
+        <div><span class="pill">${data[state.board][state.cls][s].length} chapters</span></div>
+      </div>
+    `).join("")}
+
+    <div class="card">
+      <b>🎥 Educational Videos</b>
+      <p class="muted small">
+        Every chapter now has a YouTube lesson search. LearnUp does not need your own YouTube channel or videos.
+      </p>
+    </div>`;
+}
+
+function subjects(s){
+  let ch=data[state.board][state.cls][s];
+
+  document.getElementById("app").innerHTML=`
+    <button class="secondary back" onclick="home()">← Home</button>
+
+    <div class="card">
+      <h2>${esc(s)}</h2>
+      <p class="muted">${esc(state.board)} • Class ${state.cls}</p>
+    </div>
+
+    ${ch.map((c,i)=>{
+      let k=state.board+"|"+state.cls+"|"+s+"|"+c;
+
+      return `
+        <div class="chapter">
+          <b>${i+1}. ${esc(c)}</b>
+          <br>
+          <span class="small muted">
+            ${state.done[k]?"✓ Completed":"Lesson • Notes • Quiz"}
+          </span>
+          <br>
+
+          <button onclick="lesson('${esc(s)}','${esc(c)}')">
+            📖 Open Chapter
+          </button>
+
+          <button
+            class="video-button"
+            onclick="findYouTubeVideo('${esc(s)}','${esc(c)}')">
+            🎥 Find Lesson Video
+          </button>
+        </div>`;
+    }).join("")}
+  `;
+}
+
+function findYouTubeVideo(subject,chapter){
+  const searchQuery=
+    state.board+
+    " Class "+
+    state.cls+
+    " "+
+    subject+
+    " "+
+    chapter+
+    " educational lesson";
+
+  const youtubeURL=
+    "https://www.youtube.com/results?search_query="+
+    encodeURIComponent(searchQuery);
+
+  window.open(youtubeURL,"_blank");
+}
+
+function lesson(s,c){
+  let k=state.board+"|"+state.cls+"|"+s+"|"+c;
+  let q=quizzes[s+"|"+c];
+
+  document.getElementById("app").innerHTML=`
+    <button class="secondary back" onclick="subjects('${esc(s)}')">
+      ← Chapters
+    </button>
+
+    <div class="card">
+      <span class="pill">${esc(state.board)}</span>
+      <h2>${esc(c)}</h2>
+
+      <p>
+        This chapter page is ready for board-specific lesson notes,
+        examples, activities, videos and downloadable resources.
+      </p>
+
+      <div class="info-box">
+        <b>🎥 Need a video lesson?</b>
+        <p class="small muted">
+          Search YouTube for this exact board, class, subject and chapter.
+        </p>
+        <button
+          class="video-button"
+          onclick="findYouTubeVideo('${esc(s)}','${esc(c)}')">
+          🎥 Find Lesson Video on YouTube
+        </button>
+      </div>
+
+      <h3>Learning flow</h3>
+      <p>
+        1. Learn the concept → 2. Read notes →
+        3. Practice questions → 4. Take the quiz →
+        5. Track progress.
+      </p>
+
+      <button class="primary"
+        onclick="complete('${esc(s)}','${esc(c)}')">
+        Mark chapter complete
+      </button>
+
+      ${q?`
+        <button class="secondary" style="margin-left:7px"
+          onclick="quiz('${esc(s)}','${esc(c)}')">
+          Start quiz
+        </button>
+      `:`
+        <p class="small muted" style="margin-top:15px">
+          Quiz bank will be expanded for this chapter.
+        </p>
+      `}
+    </div>`;
+}
+
+function complete(s,c){
+  state.done[state.board+"|"+state.cls+"|"+s+"|"+c]=Date.now();
+  save();
+  lesson(s,c);
+}
+
+function quiz(s,c){
+  let qs=quizzes[s+"|"+c],i=0,score=0;
+
+  function draw(){
+    let q=qs[i];
+
+    document.getElementById("app").innerHTML=`
+      <div class="card">
+        <p class="small muted">Question ${i+1} of ${qs.length}</p>
+        <h2>${esc(q[0])}</h2>
+
+        ${q[2].map((o,j)=>`
+          <button class="option" onclick="answer(${j})">
+            ${esc(o)}
+          </button>
+        `).join("")}
+      </div>`;
+  }
+
+  window.answer=(j)=>{
+    let q=qs[i];
+    let opts=document.querySelectorAll(".option");
+
+    opts.forEach(x=>x.disabled=true);
+
+    if(j===q[3]){
+      score++;
+      opts[j].classList.add("correct");
+    }else{
+      opts[j].classList.add("wrong");
+      opts[q[3]].classList.add("correct");
+    }
+
+    setTimeout(()=>{
+      i++;
+
+      if(i<qs.length){
+        draw();
+      }else{
+        let key=state.board+"|"+state.cls+"|"+s+"|"+c;
+        state.quiz[key]=Math.max(
+          state.quiz[key]||0,
+          Math.round(score/qs.length*100)
+        );
+        save();
+
+        document.getElementById("app").innerHTML=`
+          <div class="card">
+            <h1>Quiz complete 🎉</h1>
+            <h2>${score}/${qs.length}</h2>
+            <p>Your best score: ${state.quiz[key]}%</p>
+            <button class="primary"
+              onclick="lesson('${esc(s)}','${esc(c)}')">
+              Back to chapter
+            </button>
+          </div>`;
+      }
+    },650);
+  };
+
+  draw();
+}
+
+function progress(){
+  let keys=Object.keys(state.done).filter(
+    k=>k.startsWith(state.board+"|"+state.cls+"|")
+  );
+
+  document.getElementById("app").innerHTML=`
+    <div class="card">
+      <h2>My Progress</h2>
+      <p class="muted">${esc(state.board)} • Class ${state.cls}</p>
+      <h3>${keys.length} chapters completed</h3>
+      <p class="small muted">Quiz best scores are saved on this device.</p>
+    </div>
+
+    ${Object.entries(state.quiz)
+      .filter(([k])=>k.startsWith(state.board+"|"+state.cls+"|"))
+      .map(([k,v])=>`
+        <div class="chapter">
+          <b>${esc(k.split("|").slice(2).join(" • "))}</b>
+          <br>
+          <span class="pill">Best quiz: ${v}%</span>
+        </div>
+      `).join("") ||
+      '<div class="card muted">No quiz scores yet.</div>'}`;
+}
+
+function profile(){
+  document.getElementById("app").innerHTML=`
+    <div class="card">
+      <h2>Student Profile</h2>
+      <p><b>Name:</b> ${esc(state.user)}</p>
+      <p><b>Board:</b> ${esc(state.board)}</p>
+      <p><b>Class:</b> ${state.cls}</p>
+
+      <button class="secondary" onclick="change()">
+        Change board/class
+      </button>
+
+      <button class="secondary" style="margin-left:7px"
+        onclick="resetApp()">
+        Reset device data
+      </button>
+    </div>`;
+}
+
+function change(){
+  state.user=null;
+  save();
+  render();
+}
+
+function resetApp(){
+  if(confirm("Reset all local progress?")){
+    localStorage.removeItem("learnup_v2");
+    location.reload();
+  }
+}
+
+function nav(){
+  document.getElementById("nav").innerHTML=`
+    <button class="on" onclick="home()">🏠 Home</button>
+    <button onclick="progress()">📈 Progress</button>
+    <button onclick="profile()">👤 Profile</button>`;
+}
+
+nav();
+render();
+</script>
+
+</body>
+</html>
